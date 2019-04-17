@@ -1,6 +1,5 @@
 <template>
   <v-menu
-    ref="menu"
     v-model="menu"
     :close-on-content-click="false"
     transition="scale-transition"
@@ -18,11 +17,11 @@
       ></v-text-field>
     </template>
     <v-date-picker
-      ref="picker"
       v-model="date"
+      active-picker="year"
       :max="new Date().toISOString().substr(0, 10)"
       min="1950-01-01"
-      @change="save"
+      @change="menu = false"
     ></v-date-picker>
   </v-menu>
 </template>
@@ -33,15 +32,5 @@
       date: null,
       menu: false,
     }),
-    watch: {
-      menu (val) {
-        val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'))
-      },
-    },
-    methods: {
-      save (date) {
-        this.$refs.menu.save(date)
-      },
-    },
   }
 </script>

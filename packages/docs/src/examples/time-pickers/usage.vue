@@ -1,16 +1,22 @@
 <template>
-  <div>
-    <v-checkbox v-model="landscape" label="Landscape"></v-checkbox>
-    <v-checkbox v-model="ampmInTitle" label="AM/PM in title"></v-checkbox>
-    <v-time-picker v-model="picker" :landscape="landscape" :ampm-in-title="ampmInTitle"></v-time-picker>
-  </div>
+  <v-container>
+    <v-layout row>
+      <v-flex>
+        <v-checkbox v-model="landscape" label="Landscape"></v-checkbox>
+        <v-checkbox v-model="ampmInTitle" label="Show AM/PM in title"></v-checkbox>
+      </v-flex>
+      <v-flex>
+        <v-time-picker v-model="time" :landscape="landscape" :show-am-pm-in-title="ampmInTitle"></v-time-picker>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
   export default {
     data () {
       return {
-        picker: null,
+        time: null,
         landscape: false,
         ampmInTitle: false,
       }

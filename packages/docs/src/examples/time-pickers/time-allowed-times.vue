@@ -3,8 +3,7 @@
     <v-flex md12 lg6>
       <v-time-picker
         v-model="time"
-        :allowed-hours="allowedHours"
-        :allowed-minutes="allowedMinutes"
+        :allowed="{ hours: allowedHours, minutes: allowedMinutes }"
         class="mt-3"
         format="24hr"
         scrollable
@@ -15,7 +14,7 @@
     <v-flex md12 lg6>
       <v-time-picker
         v-model="timeStep"
-        :allowed-minutes="allowedStep"
+        :allowed="{ minutes: allowedStep }"
         class="mt-3"
         format="24hr"
       ></v-time-picker>

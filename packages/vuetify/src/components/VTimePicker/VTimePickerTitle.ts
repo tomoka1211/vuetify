@@ -1,56 +1,79 @@
 import './VTimePickerTitle.sass'
 
-// Mixins
-import PickerButton from '../../mixins/picker-button'
-
 // Utils
 import { pad } from '../VDatePicker/util'
-import mixins from '../../util/mixins'
+import { genPickerButton } from '../VPicker/VPicker'
 
-import { SelectingTimes } from './VTimePicker'
+// Types
+import Vue, { VNode } from 'vue'
 import { PropValidator } from 'vue/types/options'
-import { VNode } from 'vue'
+import { Time, SelectMode, Format, convert24to12 } from './VTime'
 
-export default mixins(
-  PickerButton
-/* @vue/component */
-).extend({
+export default Vue.extend({
   name: 'v-time-picker-title',
 
+  inheritAttrs: false,
+
   props: {
-    ampm: Boolean,
+    format: {
+      type: String,
+      default: 'ampm',
+    } as PropValidator<Format>,
+    showAmPm: Boolean,
     disabled: Boolean,
-    hour: Number,
-    minute: Number,
-    second: Number,
     period: {
       type: String,
       validator: period => period === 'am' || period === 'pm',
     } as PropValidator<'am' | 'pm'>,
     readonly: Boolean,
     useSeconds: Boolean,
-    selecting: Number,
+    selectMode: String as PropValidator<SelectMode>,
+    time: Object as PropValidator<Time>,
+  },
+
+  computed: {
+    isAmPm (): boolean {
+      return this.format === 'ampm'
+    },
   },
 
   methods: {
     genTime () {
-      let hour = this.hour
-      if (this.ampm) {
-        hour = hour ? ((hour - 1) % 12 + 1) : 12
+      let hour = this.time ? this.time.hour : null
+      if (hour != null && this.isAmPm) {
+        hour = convert24to12(hour)
       }
 
-      const displayedHour = this.hour == null ? '--' : this.ampm ? String(hour) : pad(hour)
-      const displayedMinute = this.minute == null ? '--' : pad(this.minute)
+      const displayedHour = hour == null ? '--' : this.isAmPm ? String(hour) : pad(hour)
+      const displayedMinute = this.time && this.time.minute != null ? pad(this.time.minute) : '--'
       const titleContent = [
-        this.genPickerButton('selecting', SelectingTimes.Hour, displayedHour, this.disabled),
+        genPickerButton(
+          this.$createElement,
+          displayedHour,
+          () => this.$emit('update:selectMode', SelectMode.Hour),
+          this.selectMode === SelectMode.Hour,
+          this.disabled
+        ),
         this.$createElement('span', ':'),
-        this.genPickerButton('selecting', SelectingTimes.Minute, displayedMinute, this.disabled),
+        genPickerButton(
+          this.$createElement,
+          displayedMinute,
+          () => this.$emit('update:selectMode', SelectMode.Minute),
+          this.selectMode === SelectMode.Minute,
+          this.disabled
+        ),
       ]
 
       if (this.useSeconds) {
-        const displayedSecond = this.second == null ? '--' : pad(this.second)
+        const displayedSecond = this.time.second == null ? '--' : pad(this.time.second)
         titleContent.push(this.$createElement('span', ':'))
-        titleContent.push(this.genPickerButton('selecting', SelectingTimes.Second, displayedSecond, this.disabled))
+        titleContent.push(genPickerButton(
+          this.$createElement,
+          displayedSecond,
+          () => this.$emit('update:selectMode', SelectMode.Second),
+          this.selectMode === SelectMode.Second,
+          this.disabled
+        ))
       }
       return this.$createElement('div', {
         'class': 'v-time-picker-title__time',
@@ -60,8 +83,20 @@ export default mixins(
       return this.$createElement('div', {
         staticClass: 'v-time-picker-title__ampm',
       }, [
-        this.genPickerButton('period', 'am', 'am', this.disabled || this.readonly),
-        this.genPickerButton('period', 'pm', 'pm', this.disabled || this.readonly),
+        genPickerButton(
+          this.$createElement,
+          'AM',
+          () => this.$emit('update:period', 'am'),
+          this.period === 'am',
+          this.disabled || this.readonly
+        ),
+        genPickerButton(
+          this.$createElement,
+          'PM',
+          () => this.$emit('update:period', 'pm'),
+          this.period === 'pm',
+          this.disabled || this.readonly
+        ),
       ])
     },
   },
@@ -69,7 +104,7 @@ export default mixins(
   render (h): VNode {
     const children = [this.genTime()]
 
-    this.ampm && children.push(this.genAmPm())
+    this.isAmPm && this.showAmPm && children.push(this.genAmPm())
 
     return h('div', {
       staticClass: 'v-time-picker-title',
