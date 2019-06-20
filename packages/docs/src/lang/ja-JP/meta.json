@@ -1,7 +1,7 @@
 {
   "": {
     "title": "Vue.js Material Component Framework",
-    "description": "Vuetify.js is a reusable semantic component framework for Vue.js. It aims to provide clean, semantic and reusable components.",
+    "description": "Vuetify.jsはVue.jsのための再利用可能なセマンティックコンポーネントフレームワークです。これは、クリーンでセマンティックな再利用可能コンポーネントを提供することを目的としています。",
     "keywords": "vue, vue 2, vue js, vue.js, material design, vue components, material design components, vuetify, vuetify.js"
   },
   "*": {
